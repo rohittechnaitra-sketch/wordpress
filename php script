@@ -1,0 +1,37 @@
+use phpseclib3\Net\SFTP;
+
+function read_sftp_files() {
+
+    $host = 'FTP.moto-direct.com';
+    $port = 22;
+    $username = 'FTP_InvBikerGear';
+    $password = 'eart#19Firm';
+    $remote_path = '/Inverness Biker Gear/';
+
+    $sftp = new SFTP($host, $port);
+
+    if (!$sftp->login($username, $password)) {
+        return 'Login failed';
+    }
+
+    $files = $sftp->nlist($remote_path);
+
+    if ($files === false) {
+        return 'Cannot read directory (check path)';
+    }
+
+    return $files;
+}
+add_shortcode('get_ftp_files', function() {
+    $files = read_sftp_files();
+
+    if (is_array($files)) {
+        return '<pre>' . print_r($files, true) . '</pre>';
+    } else {
+        return $files;
+    }
+});
+function test(){
+	echo do_shortcode('[get_ftp_files]');
+}
+add_action('wp_footer','test');
